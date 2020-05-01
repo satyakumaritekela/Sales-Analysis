@@ -1,4 +1,4 @@
-# CSCi-5408-Case-Study
+# CSCI-5408-Case-Study
 Data Management Warehousing Analytics - Extraction, Transform Load and Generate Reports Using Cognos BI
 
 For this case study we have explored the “Sample sales Data” of Kaggle owned by Gus Segura.

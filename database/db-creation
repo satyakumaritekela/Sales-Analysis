@@ -1,0 +1,213 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema Case_Study
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema Case_Study
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `Case_Study` DEFAULT CHARACTER SET latin1 ;
+USE `Case_Study` ;
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`territory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`territory` (
+  `Territory_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `Territory` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`Territory_ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`country`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`country` (
+  `Country_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `Country` VARCHAR(11) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Territory_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`Country_ID`),
+  INDEX `Territory_ID_idx` (`Territory_ID` ASC) VISIBLE,
+  CONSTRAINT `Territory_ID`
+    FOREIGN KEY (`Territory_ID`)
+    REFERENCES `Case_Study`.`territory` (`Territory_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`state`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`state` (
+  `State_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `State` VARCHAR(14) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Country_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`State_ID`),
+  INDEX `Country_ID_idx` (`Country_ID` ASC) VISIBLE,
+  CONSTRAINT `Country_ID`
+    FOREIGN KEY (`Country_ID`)
+    REFERENCES `Case_Study`.`country` (`Country_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`city`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`city` (
+  `City_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `City` VARCHAR(14) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `State_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`City_ID`),
+  INDEX `State_ID_idx` (`State_ID` ASC) VISIBLE,
+  CONSTRAINT `State_ID`
+    FOREIGN KEY (`State_ID`)
+    REFERENCES `Case_Study`.`state` (`State_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`customer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`customer` (
+  `Customer_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `Customer_Name` VARCHAR(34) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Contact_First_Name` VARCHAR(11) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Contact_Last_Name` VARCHAR(10) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Phone` VARCHAR(17) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`Customer_ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`date`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`date` (
+  `Order_Date` DATETIME NOT NULL,
+  `Qtr_ID` INT(11) NULL DEFAULT NULL,
+  `Month_ID` INT(11) NULL DEFAULT NULL,
+  `Year_ID` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`Order_Date`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`location`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`location` (
+  `Location_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `Address` VARCHAR(49) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Postal_Code` VARCHAR(9) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `City_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`Location_ID`),
+  INDEX `City_ID_idx` (`City_ID` ASC) VISIBLE,
+  CONSTRAINT `City_ID`
+    FOREIGN KEY (`City_ID`)
+    REFERENCES `Case_Study`.`city` (`City_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`order_details`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`order_details` (
+  `Order_ID` VARCHAR(6) CHARACTER SET 'utf8' NOT NULL,
+  `Order_Number` INT(11) NULL DEFAULT NULL,
+  `Orderline_Number` INT(11) NULL DEFAULT NULL,
+  `Deal_Size` VARCHAR(6) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  PRIMARY KEY (`Order_ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`product`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`product` (
+  `Product_Line` VARCHAR(16) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `MSRP` INT(11) NULL DEFAULT NULL,
+  `Product_Code` VARCHAR(9) CHARACTER SET 'utf8' NOT NULL,
+  PRIMARY KEY (`Product_Code`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`time`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`time` (
+  `Time_ID` VARCHAR(5) CHARACTER SET 'utf8' NOT NULL,
+  `Order_Date` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`Time_ID`),
+  INDEX `OrderDate_idx` (`Order_Date` ASC) VISIBLE,
+  CONSTRAINT `OrderDate`
+    FOREIGN KEY (`Order_Date`)
+    REFERENCES `Case_Study`.`date` (`Order_Date`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `Case_Study`.`sales`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Case_Study`.`sales` (
+  `Sales_ID` VARCHAR(6) CHARACTER SET 'utf8' NOT NULL,
+  `Order_ID` VARCHAR(6) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Time_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Product_Code` VARCHAR(9) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Customer_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Location_ID` VARCHAR(5) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `Quantity_Ordered` INT(11) NULL DEFAULT NULL,
+  `Price_Each` DECIMAL(5,2) NULL DEFAULT NULL,
+  `Sales` DECIMAL(7,2) NULL DEFAULT NULL,
+  INDEX `fk_Location1_Id` (`Location_ID` ASC) VISIBLE,
+  INDEX `fk_customer_Id` (`Customer_ID` ASC) VISIBLE,
+  INDEX `fk_time_Id` (`Time_ID` ASC) VISIBLE,
+  INDEX `fk_product_Code` (`Product_Code` ASC) VISIBLE,
+  INDEX `fk_Order_Id` (`Order_ID` ASC) VISIBLE,
+  PRIMARY KEY (`Sales_ID`),
+  CONSTRAINT `fk_Location1_Id`
+    FOREIGN KEY (`Location_ID`)
+    REFERENCES `Case_Study`.`location` (`Location_ID`),
+  CONSTRAINT `fk_Order_Id`
+    FOREIGN KEY (`Order_ID`)
+    REFERENCES `Case_Study`.`order_details` (`Order_ID`),
+  CONSTRAINT `fk_customer_Id`
+    FOREIGN KEY (`Customer_ID`)
+    REFERENCES `Case_Study`.`customer` (`Customer_ID`),
+  CONSTRAINT `fk_product_Code`
+    FOREIGN KEY (`Product_Code`)
+    REFERENCES `Case_Study`.`product` (`Product_Code`),
+  CONSTRAINT `fk_time_Id`
+    FOREIGN KEY (`Time_ID`)
+    REFERENCES `Case_Study`.`time` (`Time_ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
